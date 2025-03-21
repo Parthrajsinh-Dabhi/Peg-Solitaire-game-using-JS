@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Peg Solitaire</title>
+    <link rel="stylesheet" href="peg.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="main" id="main"></div>
+      <div class="table" id="table"></div>
+      <div class="reset1">
+        <button id="reset">Reset</button>
+      </div>
+    </div>
+    <script>
+      let main = document.getElementById("main");
+      let tbl = document.getElementById("table");
+      let reset1 = document.getElementById("reset");
+      reset1.addEventListener("click", resetGame);
+      var solitaire = [
+        [0, 0, 0, 1, 2, 3, 0, 0, 0],
+        [0, 0, 0, 4, 5, 6, 0, 0, 0],
+        [0, 0, 0, 7, 8, 9, 0, 0, 0],
+        [10, 11, 12, 13, 14, 15, 16, 17, 18],
+        [19, 20, 21, 22, 23, 24, 25, 26, 27],
+        [28, 29, 30, 31, 32, 33, 34, 35, 36],
+        [0, 0, 0, 37, 38, 39, 0, 0, 0],
+        [0, 0, 0, 40, 41, 42, 0, 0, 0],
+        [0, 0, 0, 43, 44, 45, 0, 0, 0],
+      ];
+
+      let x = "";
+      let previouscolor = "";
+
+      function createBoard() {
+        tbl.innerHTML = "";
+        let tab = document.createElement("table");
+        for (let i = 0; i < solitaire.length; i++) {
+          let tr = document.createElement("tr");
+          tab.appendChild(tr);
+          for (let j = 0; j < solitaire[i].length; j++) {
+            let td = document.createElement("td");
+            if (solitaire[i][j] != 0) {
+              let btn = document.createElement("button");
+              btn.id = [i + "_" + j];
+              btn.addEventListener("click", clickValue);
+              btn.innerHTML = "O";
+              if (solitaire[i][j] == 23) {
+                btn.innerHTML = "";
+              }
+              td.appendChild(btn);
+            }
+            tr.appendChild(td);
+          }
+        }
+        tbl.appendChild(tab);
+        main.appendChild(tbl);
+      }
+      function clickValue(event) {
+        let r = event.target.parentElement.parentElement.rowIndex;
+        let c = event.target.parentElement.cellIndex;
+        // console.log(r, c);
+        e = event.target;
+        // console.log(e);
+
+        let rd = r + 2;
+        let ru = r - 2;
+        let cr = c + 2;
+        let cl = c - 2;
+
+        var conditionArr = [
+          [rd, c],
+          [ru, c],
+          [r, cr],
+          [r, cl],
+        ];
+
+        if (previouscolor) {
+          previouscolor.style.backgroundColor = "";
+          previouscolor = "";
+        }
+        let jump = false;
+        for (i = 0; i < conditionArr.length; i++) {
+          let s = document.getElementById(
+            conditionArr[i][0] + "_" + conditionArr[i][1]
+          );
+          let middleR = (r + conditionArr[i][0]) / 2;
+          let middleC = (c + conditionArr[i][1]) / 2;
+          middle = document.getElementById(middleR + "_" + middleC);
+          // console.log(e.innerHTML != "" && s && s.innerHTML == "");
+          if (
+            e.innerHTML != "" &&
+            s &&
+            s.innerHTML == "" &&
+            middle &&
+            middle.innerHTML == "O"
+          ) {
+            jump = true;
+          }
+        }
+
+        if (e.innerHTML != "") {
+          if (jump) {
+            e.style.backgroundColor = "green";
+            x = e;
+            previouscolor = e;
+          } else {
+            e.style.backgroundColor = "red";
+            previouscolor = e;
+          }
+        } else if (x) {
+          let middleR = (r + x.parentElement.parentElement.rowIndex) / 2;
+          let middleC = (c + x.parentElement.cellIndex) / 2;
+          let middle = document.getElementById(middleR + "_" + middleC);
+
+          if (middle && middle.innerHTML == "O") {
+            e.innerHTML = "O";
+            middle.innerHTML = "";
+            x.innerHTML = "";
+            // x.style.backgroundColor = "";
+          }
+          x.style.backgroundColor = "";
+          x = "";
+        }
+      }
+
+      function resetGame() {
+        createBoard();
+        x = "";
+        previousInvalid = "";
+      }
+
+      createBoard();
+    </script>
+  </body>
+</html>
